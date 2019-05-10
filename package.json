@@ -1,0 +1,26 @@
+{
+  "name": "back-end",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Luka7711/movie-back-end.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Luka7711/movie-back-end/issues"
+  },
+  "homepage": "https://github.com/Luka7711/movie-back-end#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.16.4",
+    "express-session": "^1.16.1",
+    "method-override": "^3.0.0",
+    "mongoose": "^5.5.7"
+  }
+}

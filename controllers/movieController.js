@@ -4,16 +4,16 @@ const superagent 	= require('superagent');
 const Movie 		= require('../models/movies');
 
 
-
-router.get('/movies', async(req, res, next) => {
+//ADDING ALL MOVIES TO DATABASE
+router.post('/movies', async(req, res, next) => {
 	
 	superagent
 	.get('https://data.cityofchicago.org/resource/muku-wupu.json')
 	.then((data) => {
 		const actualData = JSON.parse(data.text);
-		const dataWeNeed = actualData.map((data, i) => {
+		const dataWeNeed = actualData.map((data) => {
 			return {
-				id:i,
+				
 				title: data.title,
 				date: data.date,
 				address: data.park_address,
@@ -31,7 +31,7 @@ router.get('/movies', async(req, res, next) => {
 
 		res.status(200).json({
 			status: 200,
-			data: dataWeNeed
+			message: 'successfully added data to database'
 		})
 
 	}).catch((err)=>{
@@ -40,6 +40,27 @@ router.get('/movies', async(req, res, next) => {
 		})
 	})
 })
+
+router.get('/movies', async(req, res, next) => {
+
+	try{
+
+		const foundMovies = await Movie.find({});
+
+		res.json({
+			status: 200, 
+			id: foundMovies._id,
+			data: foundMovies
+		})
+
+	} catch(err){
+		res.status(400).json({
+			status: 400,
+			message: 'No movies found'
+		})
+	}
+})
+
 
 
 router.get('/movies/:id', async(req, res, next) => {
@@ -57,6 +78,8 @@ router.get('/movies/:id', async(req, res, next) => {
 		next(err)
 	}
 })
+
+router.post('/movies/mylist/')
 
 
 

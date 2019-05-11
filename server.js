@@ -5,12 +5,10 @@ const methodOverride 	= require('method-override');
 const cors 				= require('cors')
 const session 			= require('express-session');
 
-
-
 require('./db/db');
 
 const userController = require('./controllers/userController');
-
+const movieController = require('./controllers/movieController');
 
 
 app.use(session({
@@ -33,7 +31,7 @@ app.use(cors(corsOptions))
 
 
 app.use('/auth', userController);
-
+app.use('/chicago-cinema', movieController);
 
 app.listen(process.env.PORT || 9000, ()=> {
 	console.log('listenining on port 9000')

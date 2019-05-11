@@ -4,26 +4,52 @@ const superagent 	= require('superagent');
 const Movie 		= require('../models/movies');
 
 
-router.get('/movies', (req, res, next) => {
+
+router.get('/movies', async(req, res, next) => {
 	
 	superagent
 	.get('https://data.cityofchicago.org/resource/muku-wupu.json')
 	.then((data) => {
 		const actualData = JSON.parse(data.text);
-		const dataWeNeed = actualData.map(data => {
+		const dataWeNeed = actualData.map((data, i) => {
 			return {
+				id:i,
 				title: data.title,
 				date: data.date,
 				address: data.park_address,
 				day: data.day,
-				coordinates: data.location,
-				park: data.park,
+				lng: 42.8746,
+				lat: 74.5698,
+				park: data.park
 			}
 		}) 
+		
+		dataWeNeed.map((data) => {
+			const movies  =  Movie.create(data)
+
+		})
+
 		res.status(200).json({
+			status: 200,
 			data: dataWeNeed
+		})
+
+	}).catch((err)=>{
+		res.status(400).json({
+			status: 400
 		})
 	})
 })
 
+
+
 module.exports = router;
+
+
+
+
+
+
+
+
+

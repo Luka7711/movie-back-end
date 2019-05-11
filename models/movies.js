@@ -1,10 +1,15 @@
 const mongoose = require('mongoose');
 
 const movieSchema = new mongoose.Schema({
+	id: String,
 	title: String,
 	date: String,
-	parkName: String,
-	address: String
+	address: String,
+	day: String,
+	lat: Number,
+	lng: Number,
+	park: String
+
 })
 
 

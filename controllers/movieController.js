@@ -1,6 +1,7 @@
 const express 		= require('express');
 const router 		= express.Router();
 const superagent 	= require('superagent');
+const User 			= require('../models/user');
 const Movie 		= require('../models/movies');
 
 
@@ -41,6 +42,7 @@ router.post('/movies', async(req, res, next) => {
 	})
 })
 
+//returns all movies
 router.get('/movies', async(req, res, next) => {
 
 	try{
@@ -62,7 +64,7 @@ router.get('/movies', async(req, res, next) => {
 })
 
 
-
+//returns one movie event is show page
 router.get('/movies/:id', async(req, res, next) => {
 
 	try{
@@ -79,7 +81,35 @@ router.get('/movies/:id', async(req, res, next) => {
 	}
 })
 
-router.post('/movies/mylist/')
+
+// SAVES MOVIE EVENT IN USERS LIST
+router.post('/myList/:id', async(req, res, next) => {
+
+	try{
+	
+		const currentUser = await User.findById(req.session.userDbId);
+		const movieToAdd = await Movie.findById(req.params.id);
+
+		console.log(currentUser, '<--current user');
+		console.log(movieToAdd, '<--movieToAdd');
+
+		currentUser.moviesList.push(movieToAdd._id);
+		await currentUser.save()
+
+		res.json({
+			status: 200,
+			data: currentUser,
+			message: 'successfully added movie to you list'
+		})
+		
+
+	}catch(err){
+		res.status(404).json({
+			status: 404, 
+			message: 'Something went wrong'
+		})
+	}
+})
 
 
 

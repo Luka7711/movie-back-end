@@ -157,8 +157,34 @@ router.get('/myMovie/:id', async(req, res, next) => {
 			message: 'Failed to show movie event'
 		})
 	}
-})
+});
 
+
+//delete movie event from users list
+
+router.delete('/myMovie/:id', async(req, res, next) => {
+
+	try{
+		//find current user
+		const currentUser = await User.findById(req.session.userDbId);
+		//find a movie, that user wants to delete from the list
+		const currentMovie = await Movie.findById(req.params.id)
+		
+		currentUser.moviesList.remove(currentMovie._id)
+		currentUser.save()
+
+		res.status(200).json({
+			status: 200,
+			message: 'Data removed'
+		})
+
+	}catch(err){
+		res.status(404).json({
+			status: 404,
+			message: 'failed to delete data from users list'
+		})
+	}
+})
 
 module.exports = router;
 

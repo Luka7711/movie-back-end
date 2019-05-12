@@ -83,7 +83,7 @@ router.get('/movies/:id', async(req, res, next) => {
 
 
 // SAVES MOVIE EVENT IN USERS LIST
-router.post('/myList/:id', async(req, res, next) => {
+router.post('/mylist/:id', async(req, res, next) => {
 
 	try{
 	
@@ -107,6 +107,33 @@ router.post('/myList/:id', async(req, res, next) => {
 		res.status(404).json({
 			status: 404, 
 			message: 'Something went wrong'
+		})
+	}
+})
+
+//returning users saved movie events on the page
+
+router.get('/mylist', async(req, res, next) => {
+	
+	try{
+
+		const currentUser = await User.findById(req.session.userDbId);
+		console.log(currentUser, '<--this is current user')
+		//find an user by his id
+		await User.findById(req.session.userDbId)
+		.populate('moviesList')
+		.exec((err, foundUser) => {
+				res.status(200).json({
+				status: 200,
+				data: foundUser.moviesList
+			})
+		})
+		//send movie list as JSON data
+
+	}catch(err){
+		res.status(404).json({
+			status: 404,
+			message: 'Failed to show your list'
 		})
 	}
 })

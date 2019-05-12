@@ -138,6 +138,26 @@ router.get('/mylist', async(req, res, next) => {
 	}
 })
 
+//SHOW ROUTE, RETURN ONE MOVIE EVENT FROM USERS LIST
+
+router.get('/myMovie/:id', async(req, res, next) => {
+
+	try{
+
+		const currentEvent = await Movie.findById(req.params.id);
+		
+		res.status(200).json({
+			status: 200,
+			data: currentEvent
+	})
+
+	}catch(err){
+		res.status(400).json({
+			status: 400,
+			message: 'Failed to show movie event'
+		})
+	}
+})
 
 
 module.exports = router;

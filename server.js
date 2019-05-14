@@ -5,14 +5,18 @@ const methodOverride 	= require('method-override');
 const cors 				= require('cors')
 const session 			= require('express-session');
 
+
+require('dotenv').config();
 require('./db/db');
+
+const PORT = process.env.PORT;
 
 const userController = require('./controllers/userController');
 const movieController = require('./controllers/movieController');
 
 
 app.use(session({
-	secret:'keep it safe',
+	secret: process.env.SESSION_SECRET,
 	resave:false,
 	saveUninitialized:false
 }));
@@ -33,8 +37,8 @@ app.use(cors(corsOptions))
 app.use('/auth', userController);
 app.use('/chicago-cinema', movieController);
 
-app.listen(process.env.PORT || 9000, ()=> {
-	console.log('listenining on port 9000')
+app.listen(PORT, () => {
+	console.log('listenining on port')
 })
 
 

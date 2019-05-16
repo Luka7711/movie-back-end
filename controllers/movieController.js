@@ -10,24 +10,63 @@ router.post('/movies', async(req, res, next) => {
 	
 	superagent
 	.get('https://data.cityofchicago.org/resource/muku-wupu.json')
-	.then((data) => {
-		const actualData = JSON.parse(data.text);
+	.then((apiData) => {
+
+		const actualData = JSON.parse(apiData.text);
+		// console.log(actualData)
+		
+		console.log("actual data has " + actualData.length + " elements")
+
+		for(let i = 0; i < actualData.length; i++) {
+			if(!Object.keys(actualData[i]).includes('location')) {
+				console.log("this one doesn't have a location:")
+				console.log(actualData[i])
+			}
+		}
+
 		const dataWeNeed = actualData.map((data) => {
+			
+			// console.log(data)
+			// console.log("1st coord", data.location.coordinates[0]);
+			// console.log("2nd coord", data.location.coordinates[1])
+			// return 1
+
+
+			let lat;
+			let lng;
+			if(!Object.keys(data).includes('location')) {
+				console.log("this one doesn't have a location:")
+				console.log(data)
+				// address a location manually: (use downtown Chicago as default lat long)
+				lat = 41.8786; 
+				lng = 87.6251;
+			} else {
+				lat = data.location.coordinates[1];
+				lng = data.location.coordinates[0]
+			}
+
 			return {
-				
+
 				title: data.title,
 				date: data.date,
 				address: data.park_address,
 				day: data.day,
-				lng: 42.8746,
-				lat: 74.5698,
+				lat: lat,
+				lng: lng,
 				park: data.park
+
 			}
 		}) 
-		
-		dataWeNeed.map((data) => {
-			const movies  =  Movie.create(data)
 
+		console.log(dataWeNeed)
+		// console.log("\nhere is data we need")
+		// dataWeNeed.forEach(async (data) => {
+		// 	const movies  =  await Movie.create(data)
+
+		// })
+
+		dataWeNeed.map((data) => {
+			const movies = Movie.create(data)
 		})
 
 		res.status(200).json({
@@ -36,9 +75,10 @@ router.post('/movies', async(req, res, next) => {
 		})
 
 	}).catch((err)=>{
-		res.status(400).json({
-			status: 400
-		})
+		next(err)
+		// res.status(400).json({
+		// 	status: 400
+		// })
 	})
 })
 

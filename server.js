@@ -11,9 +11,6 @@ require('./db/db');
 
 const PORT = process.env.PORT;
 
-const userController = require('./controllers/userController');
-const movieController = require('./controllers/movieController');
-
 
 app.use(session({
 	secret: process.env.SESSION_SECRET,
@@ -34,6 +31,9 @@ const corsOptions = {
 app.use(cors(corsOptions))
 
 
+
+const userController = require('./controllers/userController');
+const movieController = require('./controllers/movieController');
 app.use('/auth', userController);
 app.use('/chicago-cinema', movieController);
 

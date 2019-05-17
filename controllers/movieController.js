@@ -53,7 +53,8 @@ router.post('/movies', async(req, res, next) => {
 				day: data.day,
 				lat: lat,
 				lng: lng,
-				park: data.park
+				park: data.park,
+				parkphone: data.park_phone
 
 			}
 		}) 
@@ -169,7 +170,6 @@ router.get('/mylist', async(req, res, next) => {
 			})
 		})
 		//send movie list as JSON data
-
 	}catch(err){
 		res.status(404).json({
 			status: 404,

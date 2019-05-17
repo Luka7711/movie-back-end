@@ -7,7 +7,8 @@ const movieSchema = new mongoose.Schema({
 	day: String,
 	lat: Number,
 	lng: Number,
-	park: String
+	park: String,
+	parkphone: String
 
 })
 

@@ -1,6 +1,7 @@
 const express 		= require('express');
 const router 		= express.Router();
 const superagent 	= require('superagent');
+const unirest		= require('unirest')
 const User 			= require('../models/user');
 const Movie 		= require('../models/movies');
 
@@ -224,6 +225,45 @@ router.delete('/myMovie/:id', async(req, res, next) => {
 			message: 'failed to delete data from users list'
 		})
 	}
+})
+
+
+router.get('/plot/:title', async(req, res, next) => {
+
+		try{
+			
+
+			unirest
+ 			.get(`https://movie-database-imdb-alternative.p.rapidapi.com/?page=1&r=json&s=${req.params.title}`)
+			.header("X-RapidAPI-Host", "movie-database-imdb-alternative.p.rapidapi.com")
+			.header("X-RapidAPI-Key", '42c942c36bmsh07b78ab42f4a156p1199e9jsn7ddb5f6127a2')
+			.end(function (result) {
+ 				
+  			let id = result.body.Search[0].imdbID
+  			console.log(typeof(id), '<--saved data in id ')
+
+			unirest.get(`https://movie-database-imdb-alternative.p.rapidapi.com/?i=${id}&r=json`)
+			.header("X-RapidAPI-Host", "movie-database-imdb-alternative.p.rapidapi.com")
+			.header("X-RapidAPI-Key", '42c942c36bmsh07b78ab42f4a156p1199e9jsn7ddb5f6127a2')
+			.end(function (resol) {
+  				// console.log(resol.body.Plot, 'get me PLOT');
+
+  			const actualData = resol.body.Plot;
+
+  			res.json({
+  				status: 200,
+  				data: actualData,
+  				message: 'dskgdfglkdfnglkdfng'
+  			})
+			});	
+			})
+
+			
+		}catch(err){
+			res.json({
+				message:'Not such a movie'
+			})
+		}
 })
 
 module.exports = router;

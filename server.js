@@ -24,7 +24,7 @@ app.use(bodyParser.json())
 
 
 const corsOptions = {
-	origin: FRONT_END_URL,
+	origin: process.env.FRONT_END_URL,
 	credentials: true,
 	optionSuccessStatus: 200
 }

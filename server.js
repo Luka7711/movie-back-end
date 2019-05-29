@@ -2,6 +2,7 @@ const express 			= require('express');
 const app 				= express();
 const bodyParser 		= require('body-parser');
 const methodOverride 	= require('method-override');
+const unirest			= require('unirest')
 const cors 				= require('cors')
 const session 			= require('express-session');
 
@@ -23,7 +24,7 @@ app.use(bodyParser.json())
 
 
 const corsOptions = {
-	origin: 'http://localhost:3000',
+	origin: FRONT_END_URL,
 	credentials: true,
 	optionSuccessStatus: 200
 }

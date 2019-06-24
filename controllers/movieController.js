@@ -89,8 +89,17 @@ router.get('/movies', async(req, res, next) => {
 
 	try{
 
-		const foundMovies = await Movie.find({});
+		let todaysDate = new Date()
+		let movies = await Movie.find({});
+		
+		movies = movies.filter(movie => new Date(movie.date) >= todaysDate)
+		const foundMovies = movies.sort((a, b) => {
+			let dateA = new Date(a.date);
+			let dateB = new Date(b.date);
+		return dateA - dateB  
+		}) 
 
+		
 		res.json({
 			status: 200, 
 			id: foundMovies._id,
@@ -184,7 +193,6 @@ router.get('/mylist', async(req, res, next) => {
 router.get('/myMovie/:id', async(req, res, next) => {
 
 	try{
-
 		const currentEvent = await Movie.findById(req.params.id);
 		
 		res.status(200).json({

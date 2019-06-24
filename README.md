@@ -1,3 +1,4 @@
+
 # Movie App 
 
 run to install files:
@@ -5,10 +6,11 @@ run to install files:
 npm install
 ```
 
-run to start app
+run to start server
 ```
 nodemon
 ```
+
 ## API ENDPOINTS
 
 Registration
@@ -35,3 +37,7 @@ Registration
 - GET /chicago-cinema/myMovie/attributes { movie.id } —  returns one movie from users movie list
 
 - DELETE /chicago-cinema/myMovie/attributes { movie.id } — deletes current movie  and MAP from users list
+
+- GET /chicago-cinema/plot/attributes {:title} - finds movie description
+_
+

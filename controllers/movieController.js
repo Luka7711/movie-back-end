@@ -202,7 +202,7 @@ router.get('/myMovie/:id', async(req, res, next) => {
 
 	}catch(err){
 		res.status(400).json({
-			status: 400,
+			status: 400,	
 			message: 'Failed to show movie event'
 		})
 	}
@@ -257,10 +257,11 @@ router.get('/plot/:title', async(req, res, next) => {
   				// console.log(resol.body.Plot, 'get me PLOT');
 
   			const actualData = resol.body.Plot;
-
+  			const moviePoster = resol.body.Poster	
   			res.json({
   				status: 200,
   				data: actualData,
+  				poster: moviePoster,
   				message: 'dskgdfglkdfnglkdfng'
   			})
 			});	

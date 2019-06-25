@@ -257,7 +257,7 @@ router.get('/plot/:title', async(req, res, next) => {
   				// console.log(resol.body.Plot, 'get me PLOT');
 
   			const actualData = resol.body.Plot;
-  			const moviePoster = resol.body.Poster			
+  			const moviePoster = resol.body.Poster	
   			res.json({
   				status: 200,
   				data: actualData,

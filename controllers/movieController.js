@@ -239,36 +239,36 @@ router.delete('/myMovie/:id', async(req, res, next) => {
 router.get('/plot/:title', async(req, res, next) => {
 
 		try{
-			
-
 			unirest
  			.get(`https://movie-database-imdb-alternative.p.rapidapi.com/?page=1&r=json&s=${req.params.title}`)
 			.header("X-RapidAPI-Host", "movie-database-imdb-alternative.p.rapidapi.com")
 			.header("X-RapidAPI-Key", '42c942c36bmsh07b78ab42f4a156p1199e9jsn7ddb5f6127a2')
 			.end(function (result) {
- 				
-  			let id = result.body.Search[0].imdbID
-  			console.log(typeof(id), '<--saved data in id ')
+ 			
+ 				if(result.body.Response === 'True'){	
+  					let id = result.body.Search[0].imdbID
+					unirest.get(`https://movie-database-imdb-alternative.p.rapidapi.com/?i=${id}&r=json`)
+					.header("X-RapidAPI-Host", "movie-database-imdb-alternative.p.rapidapi.com")
+					.header("X-RapidAPI-Key", '42c942c36bmsh07b78ab42f4a156p1199e9jsn7ddb5f6127a2')
+					.end(function (resol) {
+  					// console.log(resol.body.Plot, 'get me PLOT');
 
-			unirest.get(`https://movie-database-imdb-alternative.p.rapidapi.com/?i=${id}&r=json`)
-			.header("X-RapidAPI-Host", "movie-database-imdb-alternative.p.rapidapi.com")
-			.header("X-RapidAPI-Key", '42c942c36bmsh07b78ab42f4a156p1199e9jsn7ddb5f6127a2')
-			.end(function (resol) {
-  				// console.log(resol.body.Plot, 'get me PLOT');
-
-  			const actualData = resol.body.Plot;
-
-  			const moviePoster = resol.body.Poster	
-  			res.json({
-  				status: 200,
-  				data: actualData,
-  				poster: moviePoster,
-  				message: 'dskgdfglkdfnglkdfng'
-  			})
-			});	
+  					const actualData = resol.body.Plot;
+  					const moviePoster = resol.body.Poster	
+  					res.json({
+  						status: 200,
+  						data: actualData,
+  						poster: moviePoster
+  					})
+					})
+				}else if(result.body.Response === 'False'){
+					res.json({
+						status:404,
+						message: 'Movie with such name is not found'
+					})
+				}	
 			})
 
-			
 		}catch(err){
 			res.json({
 				message:'Not such a movie'

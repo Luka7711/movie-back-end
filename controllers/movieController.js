@@ -152,7 +152,6 @@ router.post('/mylist/:id', async(req, res, next) => {
 			data: currentUser,
 			message: 'successfully added movie to you list'
 		})
-		
 
 	}catch(err){
 		res.status(404).json({
@@ -274,7 +273,28 @@ router.get('/plot/:title', async(req, res, next) => {
 				message:'Not such a movie'
 			})
 		}
+});
+
+router.delete('/movies/delete/all', async(req, res, next) => {
+	try{
+
+		await Movie.deleteMany({}, function(err){
+			if(!err){
+				console.log("removed");
+			}else{
+				console.log(err)
+			}
+		});
+		console.log(Movie.find({}))
+		console.log("movies deleted")
+	}catch(err){
+		res.json({
+			status:404,
+			message: "something went wrong"
+		})
+	}
 })
+
 
 module.exports = router;
 

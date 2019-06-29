@@ -295,6 +295,29 @@ router.delete('/movies/delete/all', async(req, res, next) => {
 	}
 })
 
+router.get('/weather/in/chicago', async(req, res, next) => {
+	try{
+		// await console.log("weather")
+		let response = await superagent
+		.get("http://api.openweathermap.org/data/2.5/weather?q=Chicago,USA&APPID=24efa750a9ff8ae4b68abe4adc16f424")
+		.then((result => {
+			console.log("result body")
+			console.log(result.body)
+			return result.body
+		}))
+		console.log("this is response")
+		console.log(response.main.temp)
+		res.json({
+			status:200,
+			fahren:Math.floor((Number(response.main.temp) - 273.15) * 9/5 + 32) + "°F",
+			cels: Math.floor(Number(response.main.temp) - 273.15) + "°C",
+			weatherCondit: response.weather[0].main.toLowerCase()
+		})
+	}catch(err){
+		console.log(err)
+	}
+})
+
 
 module.exports = router;
 

@@ -91,8 +91,8 @@ router.get('/movies', async(req, res, next) => {
 
 		let todaysDate = new Date()
 		let movies = await Movie.find({});
-		
 		movies = movies.filter(movie => new Date(movie.date) >= todaysDate)
+		
 		const foundMovies = movies.sort((a, b) => {
 			let dateA = new Date(a.date);
 			let dateB = new Date(b.date);
@@ -253,7 +253,7 @@ router.get('/plot/:title', async(req, res, next) => {
   					// console.log(resol.body.Plot, 'get me PLOT');
 
   					const actualData = resol.body.Plot;
-  					const moviePoster = resol.body.Poster	
+  					const moviePoster = resol.body.Poster
   					res.json({
   						status: 200,
   						data: actualData,

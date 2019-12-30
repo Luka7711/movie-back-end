@@ -90,14 +90,14 @@ router.get('/movies', async(req, res, next) => {
 	try{
 
 		let todaysDate = new Date()
-		let movies = await Movie.find({});
-		movies = movies.filter(movie => new Date(movie.date) >= todaysDate)
+		let foundMovies = await Movie.find({});
+		// movies = movies.filter(movie => new Date(movie.date) >= todaysDate)
 		
-		const foundMovies = movies.sort((a, b) => {
-			let dateA = new Date(a.date);
-			let dateB = new Date(b.date);
-		return dateA - dateB  
-		}) 
+		// const foundMovies = movies.sort((a, b) => {
+		// 	let dateA = new Date(a.date);
+		// 	let dateB = new Date(b.date);
+		// return dateA - dateB  
+		// }) 
 
 		
 		res.json({

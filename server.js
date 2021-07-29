@@ -24,7 +24,7 @@ app.use(bodyParser.json())
 
 
 const corsOptions = {
-	origin: process.env.FRONT_END_URL,
+	origin: 'https://movie-front-end.herokuapp.com',
 	credentials: true,
 	optionSuccessStatus: 200
 }

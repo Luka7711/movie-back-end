@@ -1,331 +1,274 @@
-const express 		= require('express');
-const router 		= express.Router();
-const superagent 	= require('superagent');
-const unirest		= require('unirest')
-const User 			= require('../models/user');
-const Movie 		= require('../models/movies');
-
+const express = require("express");
+const router = express.Router();
+const superagent = require("superagent");
+const unirest = require("unirest");
+const User = require("../models/user");
+const Movie = require("../models/movies");
 
 //ADDING ALL MOVIES TO DATABASE
-router.post('/movies', async(req, res, next) => {
-	
-	superagent
-	.get('https://data.cityofchicago.org/resource/muku-wupu.json')
-	.then((apiData) => {
+router.post("/movies", async (req, res, next) => {
+  superagent
+    .get("https://data.cityofchicago.org/resource/muku-wupu.json")
+    .then((apiData) => {
+      let movies = JSON.parse(apiData.text);
 
-		const actualData = JSON.parse(apiData.text);
-		// console.log(actualData)
-		
-		console.log("actual data has " + actualData.length + " elements")
+      movies = movies.map((data) => {
+        let lat, lng;
+        if (!Object.keys(data).includes("location")) {
+          lat = 41.8786;
+          lng = 87.6251;
+        } else {
+          lat = data.location.coordinates[1];
+          lng = data.location.coordinates[0];
+        }
 
-		for(let i = 0; i < actualData.length; i++) {
-			if(!Object.keys(actualData[i]).includes('location')) {
-				console.log("this one doesn't have a location:")
-				console.log(actualData[i])
-			}
-		}
+        return {
+          title: data.title,
+          date: data.date,
+          address: data.park_address,
+          day: data.day,
+          lat: lat,
+          lng: lng,
+          park: data.park,
+          parkphone: data.park_phone,
+        };
+      });
 
-		const dataWeNeed = actualData.map((data) => {
-			
-			// console.log(data)
-			// console.log("1st coord", data.location.coordinates[0]);
-			// console.log("2nd coord", data.location.coordinates[1])
-			// return 1
+      movies.map((data) => {
+        Movie.create(data);
+      });
 
-
-			let lat;
-			let lng;
-			if(!Object.keys(data).includes('location')) {
-				console.log("this one doesn't have a location:")
-				console.log(data)
-				// address a location manually: (use downtown Chicago as default lat long)
-				lat = 41.8786; 
-				lng = 87.6251;
-			} else {
-				lat = data.location.coordinates[1];
-				lng = data.location.coordinates[0]
-			}
-
-			return {
-
-				title: data.title,
-				date: data.date,
-				address: data.park_address,
-				day: data.day,
-				lat: lat,
-				lng: lng,
-				park: data.park,
-				parkphone: data.park_phone
-
-			}
-		}) 
-
-		console.log(dataWeNeed)
-		// console.log("\nhere is data we need")
-		// dataWeNeed.forEach(async (data) => {
-		// 	const movies  =  await Movie.create(data)
-
-		// })
-
-		dataWeNeed.map((data) => {
-			const movies = Movie.create(data)
-		})
-
-		res.status(200).json({
-			status: 200,
-			message: 'successfully added data to database'
-		})
-
-	}).catch((err)=>{
-		next(err)
-		// res.status(400).json({
-		// 	status: 400
-		// })
-	})
-})
+      res.status(200).json({
+        status: 200,
+        message: "successfully added data to database",
+      });
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
 
 //returns all movies
-router.get('/movies', async(req, res, next) => {
+router.get("/movies", async (req, res, next) => {
+  try {
+    let todaysDate = new Date();
+    let foundMovies = await Movie.find({});
 
-	try{
-
-		let todaysDate = new Date()
-		let foundMovies = await Movie.find({});
-		// movies = movies.filter(movie => new Date(movie.date) >= todaysDate)
-		
-		// const foundMovies = movies.sort((a, b) => {
-		// 	let dateA = new Date(a.date);
-		// 	let dateB = new Date(b.date);
-		// return dateA - dateB  
-		// }) 
-
-		
-		res.json({
-			status: 200, 
-			id: foundMovies._id,
-			data: foundMovies
-		})
-
-	} catch(err){
-		res.status(400).json({
-			status: 400,
-			message: 'No movies found'
-		})
-	}
-})
-
+    res.json({
+      status: 200,
+      id: foundMovies._id,
+      data: foundMovies,
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 400,
+      message: "No movies found",
+    });
+  }
+});
 
 //returns one movie event is show page
-router.get('/movies/:id', async(req, res, next) => {
+router.get("/movies/:id", async (req, res, next) => {
+  try {
+    const foundMovie = await Movie.findById(req.params.id);
 
-	try{
-	
-	const foundMovie = await Movie.findById(req.params.id)
-
-	res.json({
-		status: 200,
-		data: foundMovie
-	})
-	
-	}catch(err){
-		next(err)
-	}
-})
-
+    res.json({
+      status: 200,
+      data: foundMovie,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // SAVES MOVIE EVENT IN USERS LIST
-router.post('/mylist/:id', async(req, res, next) => {
+router.post("/mylist/:id", async (req, res, next) => {
+  try {
+    const currentUser = await User.findById(req.session.userDbId);
+    const movieToAdd = await Movie.findById(req.params.id);
 
-	try{
-	
-		const currentUser = await User.findById(req.session.userDbId);
-		const movieToAdd = await Movie.findById(req.params.id);
+    console.log(currentUser, "<--current user");
+    console.log(movieToAdd, "<--movieToAdd");
 
-		console.log(currentUser, '<--current user');
-		console.log(movieToAdd, '<--movieToAdd');
+    currentUser.moviesList.push(movieToAdd._id);
+    await currentUser.save();
 
-		currentUser.moviesList.push(movieToAdd._id);
-		await currentUser.save()
-
-		res.json({
-			status: 200,
-			data: currentUser,
-			message: 'successfully added movie to you list'
-		})
-
-	}catch(err){
-		res.status(404).json({
-			status: 404, 
-			message: 'Something went wrong'
-		})
-	}
-})
+    res.json({
+      status: 200,
+      data: currentUser,
+      message: "successfully added movie to you list",
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 404,
+      message: "Something went wrong",
+    });
+  }
+});
 
 //returning users saved movie events on the page
 
-router.get('/mylist', async(req, res, next) => {
-	
-	try{
-
-		const currentUser = await User.findById(req.session.userDbId);
-		console.log(currentUser, '<--this is current user')
-		//find an user by his id
-		await User.findById(req.session.userDbId)
-		.populate('moviesList')
-		.exec((err, foundUser) => {
-				res.status(200).json({
-				status: 200,
-				data: foundUser.moviesList
-			})
-		})
-		//send movie list as JSON data
-	}catch(err){
-		res.status(404).json({
-			status: 404,
-			message: 'Failed to show your list'
-		})
-	}
-})
+router.get("/mylist", async (req, res, next) => {
+  try {
+    const currentUser = await User.findById(req.session.userDbId);
+    console.log(currentUser, "<--this is current user");
+    //find an user by his id
+    await User.findById(req.session.userDbId)
+      .populate("moviesList")
+      .exec((err, foundUser) => {
+        res.status(200).json({
+          status: 200,
+          data: foundUser.moviesList,
+        });
+      });
+    //send movie list as JSON data
+  } catch (err) {
+    res.status(404).json({
+      status: 404,
+      message: "Failed to show your list",
+    });
+  }
+});
 
 //SHOW ROUTE, RETURN ONE MOVIE EVENT FROM USERS LIST
 
-router.get('/myMovie/:id', async(req, res, next) => {
+router.get("/myMovie/:id", async (req, res, next) => {
+  try {
+    const currentEvent = await Movie.findById(req.params.id);
 
-	try{
-		const currentEvent = await Movie.findById(req.params.id);
-		
-		res.status(200).json({
-			status: 200,
-			data: currentEvent
-	})
-
-	}catch(err){
-		res.status(400).json({
-			status: 400,	
-			message: 'Failed to show movie event'
-		})
-	}
+    res.status(200).json({
+      status: 200,
+      data: currentEvent,
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 400,
+      message: "Failed to show movie event",
+    });
+  }
 });
-
 
 //delete movie event from users list
 
-router.delete('/myMovie/:id', async(req, res, next) => {
+router.delete("/myMovie/:id", async (req, res, next) => {
+  try {
+    //find current user
+    const currentUser = await User.findById(req.session.userDbId);
+    //find a movie, that user wants to delete from the list
+    const currentMovie = await Movie.findById(req.params.id);
 
-	try{
-		//find current user
-		const currentUser = await User.findById(req.session.userDbId);
-		//find a movie, that user wants to delete from the list
-		const currentMovie = await Movie.findById(req.params.id)
-		
-		currentUser.moviesList.remove(currentMovie._id)
-		currentUser.save()
+    currentUser.moviesList.remove(currentMovie._id);
+    currentUser.save();
 
-		res.status(200).json({
-			status: 200,
-			message: 'Data removed'
-		})
-
-	}catch(err){
-		res.status(404).json({
-			status: 404,
-			message: 'failed to delete data from users list'
-		})
-	}
-})
-
-
-router.get('/plot/:title', async(req, res, next) => {
-
-		try{
-			unirest
- 			.get(`https://movie-database-imdb-alternative.p.rapidapi.com/?page=1&r=json&s=${req.params.title}`)
-			.header("X-RapidAPI-Host", "movie-database-imdb-alternative.p.rapidapi.com")
-			.header("X-RapidAPI-Key", '42c942c36bmsh07b78ab42f4a156p1199e9jsn7ddb5f6127a2')
-			.end(function (result) {
- 			
- 				if(result.body.Response === 'True'){	
-  					let id = result.body.Search[0].imdbID
-					unirest.get(`https://movie-database-imdb-alternative.p.rapidapi.com/?i=${id}&r=json`)
-					.header("X-RapidAPI-Host", "movie-database-imdb-alternative.p.rapidapi.com")
-					.header("X-RapidAPI-Key", '42c942c36bmsh07b78ab42f4a156p1199e9jsn7ddb5f6127a2')
-					.end(function (resol) {
-  					// console.log(resol.body.Plot, 'get me PLOT');
-
-  					const actualData = resol.body.Plot;
-  					const moviePoster = resol.body.Poster
-  					res.json({
-  						status: 200,
-  						data: actualData,
-  						poster: moviePoster
-  					})
-					})
-				}else if(result.body.Response === 'False'){
-					res.json({
-						status:404,
-						message: 'Movie with such name is not found'
-					})
-				}	
-			})
-
-		}catch(err){
-			res.json({
-				message:'Not such a movie'
-			})
-		}
+    res.status(200).json({
+      status: 200,
+      message: "Data removed",
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 404,
+      message: "failed to delete data from users list",
+    });
+  }
 });
 
-router.delete('/movies/delete/all', async(req, res, next) => {
-	try{
+router.get("/plot/:title", async (req, res, next) => {
+  try {
+    unirest
+      .get(
+        `https://movie-database-imdb-alternative.p.rapidapi.com/?page=1&r=json&s=${req.params.title}`
+      )
+      .header(
+        "X-RapidAPI-Host",
+        "movie-database-imdb-alternative.p.rapidapi.com"
+      )
+      .header(
+        "X-RapidAPI-Key",
+        "42c942c36bmsh07b78ab42f4a156p1199e9jsn7ddb5f6127a2"
+      )
+      .end(function (result) {
+        if (result.body.Response === "True") {
+          let id = result.body.Search[0].imdbID;
+          unirest
+            .get(
+              `https://movie-database-imdb-alternative.p.rapidapi.com/?i=${id}&r=json`
+            )
+            .header(
+              "X-RapidAPI-Host",
+              "movie-database-imdb-alternative.p.rapidapi.com"
+            )
+            .header(
+              "X-RapidAPI-Key",
+              "42c942c36bmsh07b78ab42f4a156p1199e9jsn7ddb5f6127a2"
+            )
+            .end(function (resol) {
+              // console.log(resol.body.Plot, 'get me PLOT');
 
-		await Movie.deleteMany({}, function(err){
-			if(!err){
-				console.log("removed");
-			}else{
-				console.log(err)
-			}
-		});
-		console.log(Movie.find({}))
-		console.log("movies deleted")
-	}catch(err){
-		res.json({
-			status:404,
-			message: "something went wrong"
-		})
-	}
-})
+              const actualData = resol.body.Plot;
+              const moviePoster = resol.body.Poster;
+              res.json({
+                status: 200,
+                data: actualData,
+                poster: moviePoster,
+              });
+            });
+        } else if (result.body.Response === "False") {
+          res.json({
+            status: 404,
+            message: "Movie with such name is not found",
+          });
+        }
+      });
+  } catch (err) {
+    res.json({
+      message: "Not such a movie",
+    });
+  }
+});
 
-router.get('/weather/in/chicago', async(req, res, next) => {
-	try{
-		// await console.log("weather")
-		let response = await superagent
-		.get("http://api.openweathermap.org/data/2.5/weather?q=Chicago,USA&APPID=24efa750a9ff8ae4b68abe4adc16f424")
-		.then((result => {
-			console.log("result body")
-			console.log(result.body)
-			return result.body
-		}))
-		console.log("this is response")
-		console.log(response.main.temp)
-		res.json({
-			status:200,
-			fahren:Math.floor((Number(response.main.temp) - 273.15) * 9/5 + 32) + "°F",
-			cels: Math.floor(Number(response.main.temp) - 273.15) + "°C",
-			weatherCondit: response.weather[0].main.toLowerCase()
-		})
-	}catch(err){
-		console.log(err)
-	}
-})
+router.delete("/movies/delete/all", async (req, res, next) => {
+  try {
+    await Movie.deleteMany({}, function (err) {
+      if (!err) {
+        console.log("removed");
+      } else {
+        console.log(err);
+      }
+    });
+    console.log(Movie.find({}));
+    console.log("movies deleted");
+  } catch (err) {
+    res.json({
+      status: 404,
+      message: "something went wrong",
+    });
+  }
+});
 
+router.get("/weather/in/chicago", async (req, res, next) => {
+  try {
+    // await console.log("weather")
+    let response = await superagent
+      .get(
+        "http://api.openweathermap.org/data/2.5/weather?q=Chicago,USA&APPID=24efa750a9ff8ae4b68abe4adc16f424"
+      )
+      .then((result) => {
+        console.log("result body");
+        console.log(result.body);
+        return result.body;
+      });
+    console.log("this is response");
+    console.log(response.main.temp);
+    res.json({
+      status: 200,
+      fahren:
+        Math.floor(((Number(response.main.temp) - 273.15) * 9) / 5 + 32) + "°F",
+      cels: Math.floor(Number(response.main.temp) - 273.15) + "°C",
+      weatherCondit: response.weather[0].main.toLowerCase(),
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 module.exports = router;
-
-
-
-
-
-
-
-
-

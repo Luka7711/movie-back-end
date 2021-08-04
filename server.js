@@ -19,11 +19,13 @@ app.use(
   })
 );
 
+console.log(PORT);
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const corsOptions = {
-  origin: "https://localhost:3000",
+  origin: "http://localhost:3000",
   credentials: true,
   optionSuccessStatus: 200,
 };

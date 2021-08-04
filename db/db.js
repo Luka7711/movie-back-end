@@ -1,9 +1,8 @@
 // This is where we will set up our db connection
 const mongoose = require("mongoose");
 
-const connectionString = process.env.MONGODB_URI;
-// const connectionString = "movidedb";
-// food is the name of our database
+// const connectionString = process.env.MONGODB_URI;
+const connectionString = "mongodb://localhost/movie";
 // that is automatically created
 mongoose.connect(connectionString, {
   useNewUrlParser: true,

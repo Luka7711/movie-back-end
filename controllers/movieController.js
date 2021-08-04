@@ -7,6 +7,7 @@ const Movie = require("../models/movies");
 
 //ADDING ALL MOVIES TO DATABASE
 router.post("/movies", async (req, res, next) => {
+  console.log("request received");
   superagent
     .get("https://data.cityofchicago.org/resource/muku-wupu.json")
     .then((apiData) => {
@@ -34,13 +35,35 @@ router.post("/movies", async (req, res, next) => {
         };
       });
 
-      movies.map((data) => {
-        Movie.create(data);
-      });
+      // create 30 movie collections
+      for (let i = 0; i < 30; i++) {
+        Movie.create(movies[i]);
+      }
 
+      /*save cast's(name, plot, movie photos), plot,
+
+        1. find id of movie 
+        url: title/find
+        params: movie_title
+        
+        2. find over all details 
+        url: title/get-overview-details 
+        params: movie_id
+        save {"id of movie","ratings","genres","releaseDate", "plotSummary", "image" }
+        
+        3. find top cast name id 
+        url: title/get-top-cast 
+        params: movie_id
+        returns name's id of top cast in movie [0:"/name/nm0000158/", 1:"/name/nm0000166/"]
+        
+        4. find and save top cast's names
+        url: actors/get-bio
+        params: actor_name
+        returns details about actor
+        */
       res.status(200).json({
         status: 200,
-        message: "successfully added data to database",
+        message: "success",
       });
     })
     .catch((err) => {
@@ -51,18 +74,17 @@ router.post("/movies", async (req, res, next) => {
 //returns all movies
 router.get("/movies", async (req, res, next) => {
   try {
-    let todaysDate = new Date();
-    let foundMovies = await Movie.find({});
+    let movies = await Movie.find({});
 
     res.json({
       status: 200,
-      id: foundMovies._id,
-      data: foundMovies,
+      id: movies._id,
+      data: movies,
     });
   } catch (err) {
-    res.status(400).json({
+    res.json({
       status: 400,
-      message: "No movies found",
+      message: "Something went wrong",
     });
   }
 });

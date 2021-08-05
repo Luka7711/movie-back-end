@@ -4,6 +4,8 @@ const superagent = require("superagent");
 const unirest = require("unirest");
 const User = require("../models/user");
 const Movie = require("../models/movies");
+const getMovieId = require("../services/instance");
+const axios = require("axios");
 
 //ADDING ALL MOVIES TO DATABASE
 router.post("/movies", async (req, res, next) => {
@@ -35,11 +37,34 @@ router.post("/movies", async (req, res, next) => {
         };
       });
 
-      // create 30 movie collections
-      for (let i = 0; i < 30; i++) {
-        Movie.create(movies[i]);
-      }
+      // Movie.create(movies[i]);no
 
+      let forLoop = async () => {
+        for (let i = 0; i < 5; i++) {
+          console.log(i);
+          await axios
+            .get(
+              "https://imdb8.p.rapidapi.com/auto-complete?q=" + movies[i].title,
+              {
+                method: "GET",
+                headers: {
+                  "x-rapidapi-key":
+                    "20a16b11demsh01d177a853c4fa0p1f60c3jsnf03f5408c9ed",
+                  "x-rapidapi-host": "imdb8.p.rapidapi.com",
+                },
+              }
+            )
+            .then(({ data }) => {
+              console.log(data.d[0]);
+              movies.posterUrl = data.d[0];
+            })
+            .catch((err) => {
+              console.error("something");
+            });
+        }
+      };
+
+      forLoop();
       /*save cast's(name, plot, movie photos), plot,
 
         1. find id of movie 

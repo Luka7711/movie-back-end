@@ -1,99 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const superagent = require("superagent");
 const unirest = require("unirest");
 const User = require("../models/user");
 const Movie = require("../models/movies");
-const getMovieId = require("../services/instance");
+const movieApi = require("../services/instance.js");
 const axios = require("axios");
 
 //ADDING ALL MOVIES TO DATABASE
 router.post("/movies", async (req, res, next) => {
-  console.log("request received");
-  superagent
-    .get("https://data.cityofchicago.org/resource/muku-wupu.json")
-    .then((apiData) => {
-      let movies = JSON.parse(apiData.text);
-
-      movies = movies.map((data) => {
-        let lat, lng;
-        if (!Object.keys(data).includes("location")) {
-          lat = 41.8786;
-          lng = 87.6251;
-        } else {
-          lat = data.location.coordinates[1];
-          lng = data.location.coordinates[0];
-        }
-
-        return {
-          title: data.title,
-          date: data.date,
-          address: data.park_address,
-          day: data.day,
-          lat: lat,
-          lng: lng,
-          park: data.park,
-          parkphone: data.park_phone,
-        };
-      });
-
-      // Movie.create(movies[i]);no
-
-      let forLoop = async () => {
-        for (let i = 0; i < 5; i++) {
-          console.log(i);
-          await axios
-            .get(
-              "https://imdb8.p.rapidapi.com/auto-complete?q=" + movies[i].title,
-              {
-                method: "GET",
-                headers: {
-                  "x-rapidapi-key":
-                    "20a16b11demsh01d177a853c4fa0p1f60c3jsnf03f5408c9ed",
-                  "x-rapidapi-host": "imdb8.p.rapidapi.com",
-                },
-              }
-            )
-            .then(({ data }) => {
-              console.log(data.d[0]);
-              movies.posterUrl = data.d[0];
-            })
-            .catch((err) => {
-              console.error("something");
-            });
-        }
-      };
-
-      forLoop();
-      /*save cast's(name, plot, movie photos), plot,
-
-        1. find id of movie 
-        url: title/find
-        params: movie_title
-        
-        2. find over all details 
-        url: title/get-overview-details 
-        params: movie_id
-        save {"id of movie","ratings","genres","releaseDate", "plotSummary", "image" }
-        
-        3. find top cast name id 
-        url: title/get-top-cast 
-        params: movie_id
-        returns name's id of top cast in movie [0:"/name/nm0000158/", 1:"/name/nm0000166/"]
-        
-        4. find and save top cast's names
-        url: actors/get-bio
-        params: actor_name
-        returns details about actor
-        */
-      res.status(200).json({
-        status: 200,
-        message: "success",
-      });
-    })
-    .catch((err) => {
-      next(err);
-    });
+  // IMPORTANT! Movie.create(movies[i]);
+  let movieEv = await movieApi.getMovieEvents();
+  console.log(movieEv.length, "length");
 });
 
 //returns all movies

@@ -1,4 +1,5 @@
 const axios = require("axios");
+const request = require("superagent");
 const superagent = require("superagent");
 
 const getMovieEvents = async () => {
@@ -22,21 +23,57 @@ const getMovieEvents = async () => {
   return movieEvents;
 };
 
-const getMoviesId = async (title) => {
+const getMoviesId = async (movieEvents) => {
   let options = {
     method: "GET",
     url: "https://imdb8.p.rapidapi.com/title/find",
-    params: { q: title },
+    params: { q: "" },
     headers: {
       "x-rapidapi-key": "20a16b11demsh01d177a853c4fa0p1f60c3jsnf03f5408c9ed",
       "x-rapidapi-host": "imdb8.p.rapidapi.com",
     },
   };
-  const response = await axios
-    .request(options)
-    .then((data) => data.data.results[0]);
 
-  return response;
+  let atIndex = 0;
+  let lastIndex = movieEvents.length;
+  let requestCount = 5;
+  let numTimes = 0;
+
+  let requestTimer = setInterval(async () => {
+    let itemsLeft = lastIndex - atIndex;
+
+    if (itemsLeft >= requestCount) {
+      numTimes = 5;
+    } else if (itemsLeft < requestCount) {
+      numTimes = itemsLeft;
+    }
+
+    let moviesForRequest = [];
+
+    for (let i = 0; i < numTimes; i++) {
+      moviesForRequest.push(movieEvents[atIndex].title);
+      atIndex++;
+    }
+    await requestId(moviesForRequest);
+
+    if (atIndex === lastIndex) clearInterval(requestTimer);
+  }, 2000);
+
+  // get array
+  const requestId = async (movies, ids) => {
+    movies.map(async (movie) => {
+      options.params.q = movie;
+      const response = await axios
+        .request(options)
+        .then(({ data }) => console.log(data.results[0]));
+    });
+  };
+
+  // const response = await axios
+  //   .request(options)
+  //   .then((data) => data.data.results[0]);
+
+  // return response;
 };
 
 module.exports = { getMovieEvents, getMoviesId };

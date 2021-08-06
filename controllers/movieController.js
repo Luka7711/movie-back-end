@@ -9,8 +9,12 @@ const axios = require("axios");
 //ADDING ALL MOVIES TO DATABASE
 router.post("/movies", async (req, res, next) => {
   // IMPORTANT! Movie.create(movies[i]);
-  let movieEv = await movieApi.getMovieEvents();
-  console.log(movieEv.length, "length");
+  const events = await movieApi.getMovieEvents();
+  const movies_id = await movieApi.getMoviesId(events);
+
+  // get overall details by movie_id
+  // find top cast name_ids by movie_id
+  // find names and images of each cast by name_id
 });
 
 //returns all movies

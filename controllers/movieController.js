@@ -10,11 +10,16 @@ const axios = require("axios");
 router.post("/movies", async (req, res, next) => {
   // IMPORTANT! Movie.create(movies[i]);
   const events = await movieApi.getMovieEvents();
-  const movies_id = await movieApi.getMoviesId(events);
 
-  // get overall details by movie_id
-  // find top cast name_ids by movie_id
-  // find names and images of each cast by name_id
+  const getDetails = async (events) => {
+    for (let i = 0; i < events.length; i++) {
+      let movie = await movieApi.getMovieDetails(events[i]);
+      //Movie.create(movie);
+    }
+    return movieDetail;
+  };
+
+  getDetails(events).then((data) => console.log(data, "DATA"));
 });
 
 //returns all movies

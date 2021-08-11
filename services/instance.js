@@ -10,7 +10,7 @@ const getMovieEvents = async () => {
 
   const movieEvents = [];
 
-  for (let i = 0; i < 5; i++) {
+  for (let i = 5; i < 15; i++) {
     let eventDetail = {
       title: response[i].title,
       park: response[i].park,
@@ -24,17 +24,51 @@ const getMovieEvents = async () => {
   return movieEvents;
 };
 
-const getMovieDetails = async (movieEvent) => {
-  let movie = {};
+const filterByTitle = (movieTitle, data) => {
+  for (let item of data) {
+    if (movieTitle === item.title) {
+      let id = item.id.replace("/title/", "");
+      return id;
+    }
+  }
+  return null;
+};
 
-  let promise = new Promise((resolve, reject) => {
-    timerId = setTimeout(() => {
+// Making a request to IMDB && send back movie object to MOVIE CONTROLLER
+const getMovieDetails = async (movieEvent) => {
+  let details = {};
+
+  const promise = new Promise((resolve, reject) => {
+    timerId = setTimeout(async () => {
       options.movie_id.params = { q: movieEvent.title };
-      axios.request(options.movie_id).then((response) => {
-        console.log(response.data.results[0]);
-        resolve(response.results);
+
+      await axios.request(options.movie_id).then(async ({ data }) => {
+        let movieId = filterByTitle(movieEvent.title, data.results);
+
+        if (movieId) {
+          options.details.params = { tconst: movieId };
+          //get overview details
+          await axios.request(options.details).then(({ data }) => {
+            // save overview details {}
+            Object.assign(details, data);
+          });
+
+          // set params for call
+          options.mv_images.params = { tconst: movieId };
+          // get images
+          await axios.request(options.mv_images).then(({ data }) => {
+            //save it
+            details.images = data.images;
+          });
+
+          options.top_cast.params = { tconst: movieId };
+          await axios.request(options.top_cast).then(({ data }) => {
+            details.cast_ids = data;
+          });
+          resolve(details);
+        } else resolve({});
       });
-    }, 2000);
+    }, 1000);
   });
   return promise;
 };
@@ -42,17 +76,7 @@ const getMovieDetails = async (movieEvent) => {
 module.exports = { getMovieEvents, getMovieDetails };
 
 /*save cast's(name, plot, movie photos), plot,
-
-1. find id of movie 
-const requestId = async (moviesForRequest, id_data) => {
-  const ids = moviesForRequest.map(async (movie) => {
-    options.params.q = movie;
-    const response = await axios.request(options).then(({ data }) => {
-      id_data.push(data.results[0].id);
-      return id_data;
-    });
-  });
-};
+        1. find id of movie 
         url: title/find
         params: movie_title
         

@@ -8,18 +8,32 @@ const axios = require("axios");
 
 //ADDING ALL MOVIES TO DATABASE
 router.post("/movies", async (req, res, next) => {
-  // IMPORTANT! Movie.create(movies[i]);
-  const events = await movieApi.getMovieEvents();
+  try {
+    const events = await movieApi.getMovieEvents();
 
-  const getDetails = async (events) => {
-    for (let i = 0; i < events.length; i++) {
-      let movie = await movieApi.getMovieDetails(events[i]);
-      //Movie.create(movie);
-    }
-    return movieDetail;
-  };
+    const getDetails = async (events) => {
+      let movies_db;
+      for (let i = 0; i < events.length; i++) {
+        let movieDetail = await movieApi.getMovieDetails(events[i]);
+        Movie.create({ event: events[i], details: movieDetail });
+        console.log(movieDetail, "HELLOOOOOO");
+      }
+      movies_db = await Movie.find({});
+      return movies_db;
+    };
 
-  getDetails(events).then((data) => console.log(data, "DATA"));
+    getDetails(events).then((movie_data) => {
+      res.json({
+        status: 200,
+        data: movie_data,
+      });
+    });
+  } catch (err) {
+    res.json({
+      status: 404,
+      text: "ERROR",
+    });
+  }
 });
 
 //returns all movies

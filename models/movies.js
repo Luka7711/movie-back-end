@@ -1,15 +1,14 @@
 const mongoose = require("mongoose");
 
 const movieSchema = new mongoose.Schema({
-  title: String,
-  date: String,
-  address: String,
-  cordinates: String,
-  park: String,
-  plot: String,
-  posterURL: String,
-  cast: [],
-  moviePhotoColl: [],
+  event: {
+    title: String,
+    date: String,
+    address: String,
+    cordinates: String,
+    park: String,
+  },
+  details: {},
 });
 
 const Movie = mongoose.model("Movie", movieSchema);

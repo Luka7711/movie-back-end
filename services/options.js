@@ -20,7 +20,7 @@ const details = {
 const mv_images = {
   method: "GET",
   url: "https://imdb8.p.rapidapi.com/title/get-images",
-  params: { tconst: "tt0944947", limit: "15" },
+  params: { tconst: "tt0944947", limit: "10" },
   headers: {
     "x-rapidapi-key": "d3e39eeecfmsh3998390045e2466p154abfjsna7eb052dce03",
     "x-rapidapi-host": "imdb8.p.rapidapi.com",

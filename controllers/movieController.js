@@ -16,13 +16,13 @@ router.post("/movies", async (req, res, next) => {
       for (let i = 0; i < events.length; i++) {
         let movieDetail = await movieApi.getMovieDetails(events[i]);
         Movie.create({ event: events[i], details: movieDetail });
-        console.log(movieDetail, "HELLOOOOOO");
       }
       movies_db = await Movie.find({});
       return movies_db;
     };
 
     getDetails(events).then((movie_data) => {
+      console.log(movie_data.length, "movie data");
       res.json({
         status: 200,
         data: movie_data,

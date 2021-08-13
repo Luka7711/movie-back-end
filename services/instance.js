@@ -26,7 +26,10 @@ const getMovieEvents = async () => {
 
 const filterByTitle = (movieTitle, data) => {
   for (let item of data) {
-    if (movieTitle === item.title) {
+    let regex = new RegExp("^" + movieTitle, "i");
+    let contains = regex.test(item.title);
+
+    if (contains) {
       let id = item.id.replace("/title/", "");
       return id;
     }
@@ -70,7 +73,7 @@ const getMovieDetails = async (movieEvent) => {
           resolve(details);
         } else resolve({});
       });
-    }, 2500);
+    }, 1000);
   });
   return promise;
 };

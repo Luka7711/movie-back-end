@@ -40,11 +40,9 @@ router.post("/movies", async (req, res, next) => {
 router.get("/movies", async (req, res, next) => {
   try {
     let movies = await Movie.find({});
-
     res.json({
       status: 200,
-      id: movies._id,
-      data: movies,
+      movies: movies,
     });
   } catch (err) {
     res.json({

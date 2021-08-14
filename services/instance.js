@@ -8,12 +8,7 @@ const getMovieEvents = async () => {
     .get("https://data.cityofchicago.org/resource/muku-wupu.json")
     .then((apiData) => JSON.parse(apiData.text));
 
-  const movieEvents = await response.map((event) => {
-    console.log(event.title, "event title");
-    if (event.title !== undefined) return event;
-  });
-
-  movies = movieEvents.sort((a, b) => {
+  movies = response.sort((a, b) => {
     if (a.title < b.title) return -1;
     if (a.title > b.title) return 1;
     return 0;

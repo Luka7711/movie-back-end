@@ -8,23 +8,38 @@ const getMovieEvents = async () => {
     .get("https://data.cityofchicago.org/resource/muku-wupu.json")
     .then((apiData) => JSON.parse(apiData.text));
 
-  const movieEvents = [];
+  const movieEvents = await response.map((event) => {
+    console.log(event.title, "event title");
+    if (event.title !== undefined) return event;
+  });
 
-  for (let i = 5; i < 25; i++) {
-    let eventDetail = {
-      title: response[i].title,
-      park: response[i].park,
-      address: response[i].park_address,
-      cordinates: response[i].location.cordinates,
-      date: response[i].date,
-    };
-    movieEvents.push(eventDetail);
+  movies = movieEvents.sort((a, b) => {
+    if (a.title < b.title) return -1;
+    if (a.title > b.title) return 1;
+    return 0;
+  });
+
+  let index = 0;
+  let newCollection = [];
+
+  for (let j = 0; j < movies.length - 1; j++) {
+    // take each movie event and compare to next element
+    let current = movies[index];
+    let nextElement = movies[j + 1];
+    let { date } = current;
+    let isEqual = current.title === nextElement.title;
+
+    if (isEqual) {
+      current.date = [...date, ...nextElement.date];
+    } else {
+      newCollection.push(movies[index]);
+      index = j + 1;
+    }
   }
-
-  return movieEvents;
+  return newCollection;
 };
 
-const filterByTitle = (movieTitle, data) => {
+const filterHelper = (movieTitle, data) => {
   for (let item of data) {
     let regex = new RegExp("^" + movieTitle, "i");
     let contains = regex.test(item.title);
@@ -46,7 +61,7 @@ const getMovieDetails = async (movieEvent) => {
       options.movie_id.params = { q: movieEvent.title };
 
       await axios.request(options.movie_id).then(async ({ data }) => {
-        let movieId = filterByTitle(movieEvent.title, data.results);
+        let movieId = filterHelper(movieEvent.title, data.results);
 
         if (movieId) {
           options.details.params = { tconst: movieId };
@@ -73,7 +88,7 @@ const getMovieDetails = async (movieEvent) => {
           resolve(details);
         } else resolve({});
       });
-    }, 1000);
+    }, 1500);
   });
   return promise;
 };

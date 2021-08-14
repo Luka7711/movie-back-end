@@ -29,9 +29,10 @@ router.post("/movies", async (req, res, next) => {
       });
     });
   } catch (err) {
+    console.log(err);
     res.json({
       status: 404,
-      text: "ERROR",
+      text: err,
     });
   }
 });
@@ -39,15 +40,16 @@ router.post("/movies", async (req, res, next) => {
 //returns all movies
 router.get("/movies", async (req, res, next) => {
   try {
-    let movies = await Movie.find({});
+    const movies = await Movie.find({});
     res.json({
       status: 200,
       movies: movies,
     });
   } catch (err) {
+    console.log(err);
     res.json({
       status: 400,
-      message: "Something went wrong",
+      message: err,
     });
   }
 });

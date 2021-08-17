@@ -9,13 +9,17 @@ const axios = require("axios");
 //ADDING ALL MOVIES TO DATABASE
 router.post("/movies", async (req, res, next) => {
   try {
+    // get movie events from CHICAGO EVENTS DB
+    // get details of each movie from IMDB
     const events = await movieApi.getMovieEvents();
-
     const getDetails = async (events) => {
       let movies_db;
       for (let i = 0; i < events.length; i++) {
         let movieDetail = await movieApi.getMovieDetails(events[i]);
-        Movie.create({ event: events[i], details: movieDetail });
+        //create new Movie collection with event and details data
+        if (movieDetail) {
+          Movie.create({ event: events[i], details: movieDetail });
+        }
       }
       movies_db = await Movie.find({});
       return movies_db;

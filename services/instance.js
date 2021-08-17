@@ -4,11 +4,11 @@ const superagent = require("superagent");
 const options = require("./options");
 
 const getMovieEvents = async () => {
-  const response = await superagent
+  let response = await superagent
     .get("https://data.cityofchicago.org/resource/muku-wupu.json")
     .then((apiData) => JSON.parse(apiData.text));
 
-  movies = response.sort((a, b) => {
+  movies = await response.sort((a, b) => {
     if (a.title < b.title) return -1;
     if (a.title > b.title) return 1;
     return 0;
@@ -17,19 +17,27 @@ const getMovieEvents = async () => {
   let index = 0;
   let newCollection = [];
 
-  for (let j = 0; j < movies.length - 1; j++) {
+  for (let j = 0; j < 100; j++) {
     // take each movie event and compare to next element
-    let current = movies[index];
-    let nextElement = movies[j + 1];
-    let { date } = current;
-    let isEqual = current.title === nextElement.title;
+    let nextIndex = j + 1;
+    let outOfRange = nextIndex === 100;
+    let currentEvent = movies[index];
+
+    if (outOfRange) {
+      newCollection.push(currentEvent);
+      return newCollection;
+    }
+
+    let nextEvent = movies[nextIndex];
+    let { date } = currentEvent;
+    let isEqual = currentEvent.title === nextEvent.title;
 
     if (isEqual) {
-      current.date = [...date, ...nextElement.date];
+      nextEvent.date += `, ${date}`;
     } else {
-      newCollection.push(movies[index]);
-      index = j + 1;
+      newCollection.push(currentEvent);
     }
+    index++;
   }
   return newCollection;
 };
@@ -81,7 +89,7 @@ const getMovieDetails = async (movieEvent) => {
             details.cast_ids = data;
           });
           resolve(details);
-        } else resolve({});
+        } else resolve(null);
       });
     }, 1500);
   });

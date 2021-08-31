@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const corsOptions = {
-  origin: "https://movies-in-park.herokuapp.com/",
+  origin: "*",
   credentials: true,
   optionSuccessStatus: 200,
 };

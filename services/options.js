@@ -36,4 +36,13 @@ const top_cast = {
   },
 };
 
-module.exports = { movie_id, details, mv_images, top_cast };
+const reviews = {
+  method: "GET",
+  url: "https://imdb8.p.rapidapi.com/title/get-user-reviews",
+  headers: {
+    "x-rapidapi-key": "d3e39eeecfmsh3998390045e2466p154abfjsna7eb052dce03",
+    "x-rapidapi-host": "imdb8.p.rapidapi.com",
+  },
+};
+
+module.exports = { movie_id, details, mv_images, top_cast, reviews };

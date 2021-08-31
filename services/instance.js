@@ -17,7 +17,7 @@ const getMovieEvents = async () => {
   let index = 0;
   let newCollection = [];
 
-  for (let j = 0; j < 100; j++) {
+  for (let j = 0; j < 50; j++) {
     // take each movie event and compare to next element
     let nextIndex = j + 1;
     let outOfRange = nextIndex === 100;
@@ -87,6 +87,12 @@ const getMovieDetails = async (movieEvent) => {
           options.top_cast.params = { tconst: movieId };
           await axios.request(options.top_cast).then(({ data }) => {
             details.cast_ids = data;
+          });
+
+          options.reviews.params = { tconst: movieId };
+          await axios.request(options.reviews).then(({ data }) => {
+            console.log(data);
+            details.reviews = data;
           });
           resolve(details);
         } else resolve(null);

@@ -50,10 +50,9 @@ router.get("/movies", async (req, res, next) => {
       movies: movies,
     });
   } catch (err) {
-    console.log(err);
     res.json({
       status: 400,
-      message: err,
+      message: "bad request",
     });
   }
 });

@@ -33,7 +33,7 @@ app.use(bodyParser.json());
 app.use((req, res, next) => {
   res.header(
     'Access-Control-Allow-Origin',
-    'https://movies-in-park.herokuapp.com/'
+    'https://movies-in-park.herokuapp.com'
   );
 
   res.header(

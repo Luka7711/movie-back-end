@@ -5,11 +5,6 @@ const User = require('../models/user');
 const Movie = require('../models/movies');
 const movieApi = require('../services/instance.js');
 const axios = require('axios');
-const cors = require('cors');
-const corsOptions = {
-  origin: 'https://movies-in-park.herokuapp.com',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-};
 
 //ADDING ALL MOVIES TO DATABASE
 router.post('/movies', async (req, res, next) => {
@@ -47,7 +42,7 @@ router.post('/movies', async (req, res, next) => {
 });
 
 //returns all movies
-router.get('/movies', cors(corsOptions), async (req, res, next) => {
+router.get('/movies', async (req, res, next) => {
   try {
     const movies = await Movie.find({});
     res.json({

@@ -2,8 +2,7 @@
 const mongoose = require("mongoose");
 const MongoClient = require("mongodb").MongoClient;
 
-const url =
-  "mongodb+srv://ulukbek:7T7tQE3PkDh2PBIV@cluster7.cov0m.mongodb.net/movies?retryWrites=true&w=majority";
+const url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}.cov0m.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
 // const connectionString = process.env.MONGODB_URI;
 const connectionString = "mongodb://localhost/movie";

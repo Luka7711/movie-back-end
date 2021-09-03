@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const session = require("express-session");
-
 require("dotenv").config();
 require("./db/db");
 
@@ -15,18 +14,27 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
-  res.setHeader(
+app.all("/", (req, res, next) => {
+  res.header(
     "Access-Control-Allow-Origin",
     "https://movies-in-park.herokuapp.com"
   );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
   next();
 });
+
+// app.use((req, res, next) => {
+//   res.setHeader(
+//     "Access-Control-Allow-Origin",
+//     "https://movies-in-park.herokuapp.com"
+//   );
+//   res.setHeader(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+//   );
+//   res.setHeader("Access-Control-Allow-Methods", "GET, POST");
+//   next();
+// });
 
 // app.use(cors(corsOptions));
 

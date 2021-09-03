@@ -3,7 +3,6 @@ const app = express();
 const bodyParser = require("body-parser");
 const methodOverride = require("method-override");
 const unirest = require("unirest");
-const cors = require("cors");
 const session = require("express-session");
 
 require("dotenv").config();
@@ -24,21 +23,20 @@ console.log(PORT);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const corsOptions = {
-  origin: "https://movies-in-park.herokuapp.com",
-  credentials: true,
-  optionSuccessStatus: 200,
-};
-
 app.use((req, res, next) => {
-  res.header(
+  res.setHeader(
     "Access-Control-Allow-Origin",
     "https://movies-in-park.herokuapp.com"
   );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST");
   next();
 });
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 const userController = require("./controllers/userController");
 const movieController = require("./controllers/movieController");

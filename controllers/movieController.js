@@ -9,6 +9,7 @@ const axios = require("axios");
 //ADDING ALL MOVIES TO DATABASE
 router.post("/movies", async (req, res, next) => {
   try {
+    console.log("call received");
     // get movie events from CHICAGO EVENTS DB
     // get details of each movie from IMDB
     const events = await movieApi.getMovieEvents();
@@ -44,15 +45,15 @@ router.post("/movies", async (req, res, next) => {
 //returns all movies
 router.get("/movies", async (req, res, next) => {
   try {
-    // const movies = await Movie.find({});
-    // res.json({
-    //   status: 200,
-    //   movies: movies
-    // });
-
+    const movies = await Movie.find({});
     res.json({
-      data: "hello world",
+      status: 200,
+      movies: movies,
     });
+
+    // res.json({
+    //   data: "hello world",
+    // });
   } catch (err) {
     res.json({
       status: 400,

@@ -1,8 +1,5 @@
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
-const methodOverride = require("method-override");
-const unirest = require("unirest");
 const session = require("express-session");
 
 require("dotenv").config();
@@ -18,11 +15,6 @@ app.use(
   })
 );
 
-console.log(PORT);
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
 app.use((req, res, next) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
@@ -30,7 +22,7 @@ app.use((req, res, next) => {
   );
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    "Origin, X-Requested-With, Content-Type, Accept"
   );
   res.setHeader("Access-Control-Allow-Methods", "GET, POST");
   next();

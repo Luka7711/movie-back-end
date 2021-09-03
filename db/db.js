@@ -1,23 +1,14 @@
 // This is where we will set up our db connection
 const mongoose = require("mongoose");
+const MongoClient = require("mongodb").MongoClient;
+
+const url =
+  "mongodb+srv://ulukbek:7T7tQE3PkDh2PBIV@cluster7.cov0m.mongodb.net/movies?retryWrites=true&w=majority";
 
 // const connectionString = process.env.MONGODB_URI;
 const connectionString = "mongodb://localhost/movie";
 // that is automatically created
-mongoose.connect(connectionString, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-});
-
-mongoose.connection.on("connected", () => {
-  console.log("Mongoose is connected");
-});
-
-mongoose.connection.on("error", (err) => {
-  console.log(err, " mongoose failed to connect");
-});
-
-mongoose.connection.on("disconncted", () => {
-  console.log("Mongoose is disconnected");
-});
+mongoose
+  .connect(url)
+  .then(() => console.log("mongoose is connected"))
+  .catch((err) => console.log(err, "something went wrong"));

@@ -1,18 +1,9 @@
 const express = require("express");
 const app = express();
-const session = require("express-session");
 require("dotenv").config();
 require("./db/db");
 
 const PORT = process.env.PORT;
-
-app.use(
-  session({
-    secret: "secret",
-    resave: false,
-    saveUninitialized: false,
-  })
-);
 
 app.use((req, res, next) => {
   res.setHeader(

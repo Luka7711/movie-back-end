@@ -14,29 +14,20 @@ app.use(
   })
 );
 
-app.all("/", (req, res, next) => {
-  res.header(
+app.use((req, res, next) => {
+  res.setHeader(
     "Access-Control-Allow-Origin",
     "https://movies-in-park.herokuapp.com"
   );
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST");
   next();
 });
 
-// app.use((req, res, next) => {
-//   res.setHeader(
-//     "Access-Control-Allow-Origin",
-//     "https://movies-in-park.herokuapp.com"
-//   );
-//   res.setHeader(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-//   );
-//   res.setHeader("Access-Control-Allow-Methods", "GET, POST");
-//   next();
-// });
-
-// app.use(cors(corsOptions));
+app.get("/", (req, res) => res.send("Helllo world"));
 
 const userController = require("./controllers/userController");
 const movieController = require("./controllers/movieController");

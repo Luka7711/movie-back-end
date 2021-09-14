@@ -10,8 +10,7 @@ const domains = [
 ];
 
 app.use((req, res, next) => {
-  let thisDomain = domains.indexOf(req.header("Origin"));
-  res.setHeader("Access-Control-Allow-Origin", domains[thisDomain]);
+  res.setHeader("Access-Control-Allow-Origin", domains[0]);
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"

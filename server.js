@@ -7,10 +7,14 @@ const PORT = process.env.PORT;
 const domains = [
   "https://movies-in-park.herokuapp.com",
   "http://localhost:3000",
+  "https://movie-dbs.herokuapp.com"
 ];
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", domains[0]);
+
+  const url = `${req.protocol}://${req.headers.host}`;
+  const domain = domains.indexOf(url);
+  res.setHeader("Access-Control-Allow-Origin", domain);
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"

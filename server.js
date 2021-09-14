@@ -10,8 +10,7 @@ const domains = [
 ];
 
 app.use((req, res, next) => {
-  let url = `${req.protocol}://${req.headers.host}`;
-  let thisDomain = domains.indexOf(url);
+  let thisDomain = domains.indexOf(req.header("Origin"));
   res.setHeader("Access-Control-Allow-Origin", domains[thisDomain]);
   res.setHeader(
     "Access-Control-Allow-Headers",

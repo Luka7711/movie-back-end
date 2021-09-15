@@ -14,7 +14,7 @@ app.use((req, res, next) => {
 
   const url = `${req.protocol}://${req.headers.host}`;
   const index = domains.indexOf(url);
-  res.setHeader("Access-Control-Allow-Origin", domains[index]);
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"

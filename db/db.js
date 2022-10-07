@@ -9,6 +9,6 @@ const url =
 const connectionString = "mongodb://localhost/movie";
 // that is automatically created
 mongoose
-  .connect(url)
+  .connect(url, { useNewUrlParser:true, useUnifiedTopology: true })
   .then(() => console.log("mongoose is connected"))
   .catch((err) => console.log(err, "something went wrong"));
